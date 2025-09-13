@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Срочный авто выкуп в Крыму | Быстрая оценка и выплата</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+    <style>
+        /* Базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            overflow-x: hidden;
+        }
+        
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); }
+        }
+        
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: #ff0000; }
+        }
+        
+        /* Стили для header */
+        header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            animation: slideIn 1s ease-out;
+        }
+        
+        .logo span {
+            color: #ff0000;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 30px;
+            position: relative;
+        }
+        
+        nav ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 0;
+        }
+        
+        nav ul li a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #ff0000;
+            left: 0;
+            bottom: 0;
+            transition: width 0.3s ease;
+        }
+        
+        nav ul li a:hover:after {
+            width: 100%;
+        }
+        
+        nav ul li a:hover {
+            color: #ff0000;
+        }
+        
+        /* Стили для hero секции */
+        .hero {
+            height: 100vh;
+            background: 
+                linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="black" opacity="0.1"/><path d="M0 0L100 100" stroke="black" stroke-width="1" opacity="0.1"/><path d="M100 0L0 100" stroke="black" stroke-width="1" opacity="0.1"/></svg>'),
+                url('https://images.unsplash.com/photo-1549399542-7e82138a0d6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: auto, cover, cover;
+            background-position: center;
+            background-blend-mode: overlay, normal, normal;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            z-index: -1;
+            animation: backgroundSlide 30s infinite linear;
+        }
+        
+        @keyframes backgroundSlide {
+            0% { transform: scale(1) translateX(0); }
+            50% { transform: scale(1.1) translateX(-5%); }
+            100% { transform: scale(1) translateX(0); }
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-out;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid #ff0000;
+            animation: typewriter 2s steps(40) 1s 1 normal both, blink 0.8s steps(40) infinite;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin-bottom: 30px;
+            animation: fadeIn 1.5s ease-out;
+        }
+        
+        .btn {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: fadeIn 2s ease-out, pulse 2s infinite;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: #ff0000;
+            transition: all 0.3s;
+            z-index: -1;
+        }
+        
+        .btn:hover:before {
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            animation: none;
+        }
+        
+        /* Стили для преимуществ */
+        .features {
+            padding: 100px 5%;
+            background-color: #f8f8f8;
+            position: relative;
+        }
+        
+        .features:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.05;
+            z-index: 0;
+        }
+        
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .features h2:after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background-color: #ff0000;
+            animation: glow 2s infinite;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-card {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(50px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 0%;
+            background: #ff0000;
+            transition: all 0.3s;
+            z-index: 1;
+        }
+        
+        .feature-card:hover:before {
+            height: 100%;
+        }
+        
+        .feature-card.visible {
+            animation: fadeIn 0.8s forwards;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) rotate(2deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .feature-card p {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            animation: float 3s infinite ease-in-out;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .modal.visible {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+            transform: scale(0.9) rotate(5deg);
+            transition: all 0.4s;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal.visible .modal-content {
+            transform: scale(1) rotate(0);
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #000000;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .close:hover {
+            color: #ff0000;
+            transform: rotate(90deg);
+        }
+        
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            position: relative;
+        }
+        
+        .modal h2:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background-color: #ff0000;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .submit-btn {
+            background-color: #000000;
+            color: #ffffff;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: #ff0000;
+            transition: all 0.3s;
+            z-index: -1;
+        }
+        
+        .submit-btn:hover:before {
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Уведомление об отправке */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 3000;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            nav ul {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Лоадер */
+        .loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #ff0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+           100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">Авто<span>Выкуп</span>.Крым</div>
+        <nav>
+            <ul>
+                <li><a href="#main">Главная</a></li>
+                <li><a href="#features">Преимущества</a></li>
+                <li><a href="#process">Как это работает</a></li>
+                <li><a href="#contacts">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="main">
+        <h1>Срочный выкуп авто в Крыму</h1>
+        <p>Получите моментальную оценку и быструю оплату за ваш автомобиль. Работаем со всеми марками и моделями в любом состоянии.</p>
+        <button class="btn" id="sellCarBtn">Продать авто</button>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2>Наши преимущества</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🚗</div>
+                <h3>Максимальная цена</h3>
+                <p>Мы предлагаем справедливую рыночную цену за ваш автомобиль</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💵</div>
+                <h3>Быстрая оплата</h3>
+                <p>Наличные или перевод на карту сразу после осмотра</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3>Любое состояние</h3>
+                <p>Выкупаем битые, кредитные и проблемные автомобили</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal" id="carModal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Оценка вашего автомобиля</h2>
+            <form id="carForm">
+                <div class="form-group">
+                    <label for="brand">Марка автомобиля</label>
+                    <input type="text" id="brand" required placeholder="Например, Toyota">
+                </div>
+                <div class="form-group">
+                    <label for="model">Модель</label>
+                    <input type="text" id="model" required placeholder="Например, Camry">
+                </div>
+                <div class="form-group">
+                    <label for="year">Год выпуска</label>
+                    <input type="number" id="year" min="1990" max="2023" required placeholder="Например, 2018">
+                </div>
+                <div class="form-group">
+                    <label for="price">Желаемая цена (руб.)</label>
+                    <input type="number" id="price" required placeholder="Например, 850000">
+                </div>
+                <div class="form-group">
+                    <label for="name">Ваше имя</label>
+                    <input type="text" id="name" required placeholder="Как к вам обращаться">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Телефон для связи</label>
+                    <input type="tel" id="phone" required placeholder="+7 (000) 000-00-00">
+                </div>
+                <button type="submit" class="submit-btn">Отправить на оценку</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Уведомление -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Лоадер -->
+    <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const sellCarBtn = document.getElementById('sellCarBtn');
+        const carModal = document.getElementById('carModal');
+        const closeModal = document.getElementById('closeModal');
+        const carForm = document.getElementById('carForm');
+        const notification = document.getElementById('notification');
+        const loader = document.getElementById('loader');
+
+        // Настройки Telegram (ваши данные)
+        const TELEGRAM_BOT_TOKEN = '8112921007:AAHvjM0SWYMZDh3xucPLMMfKyPmZ7TYfztY';
+        const TELEGRAM_CHAT_ID = '1049514305';
+        
+        // Открытие модального окна
+        sellCarBtn.addEventListener('click', () => {
+            carModal.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // Закрытие модального окна
+        closeModal.addEventListener('click', () => {
+            carModal.classList.remove('visible');
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Закрытие при клике вне модального окна
+        window.addEventListener('click', (e) => {
+            if (e.target === carModal) {
+                carModal.classList.remove('visible');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Функция показа уведомления
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.className = 'notification' + (isError ? ' error' : '');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Проверка, заполнены ли все поля формы
+        function validateForm(formData) {
+            if (!formData.brand || !formData.model || !formData.year || 
+                !formData.price || !formData.name || !formData.phone) {
+                return 'Все поля обязательны для заполнения';
+            }
+            
+            if (formData.phone.replace(/\D/g, '').length < 10) {
+                return 'Введите корректный номер телефона';
+            }
+            
+            return null;
+        }
+        
+        // Функция отправки данных в Telegram
+        async function sendToTelegram(formData) {
+            // Формируем сообщение для Telegram
+            const message = `📞 Новая заявка на выкуп авто:%0A%0A` +
+                           `🚗 Марка: ${encodeURIComponent(formData.brand)}%0A` +
+                           `🔧 Модель: ${encodeURIComponent(formData.model)}%0A` +
+                           `📅 Год: ${encodeURIComponent(formData.year)}%0A` +
+                           `💰 Желаемая цена: ${encodeURIComponent(formData.price)} руб.%0A` +
+                           `👤 Имя: ${encodeURIComponent(formData.name)}%0A` +
+                           `📱 Телефон: ${encodeURIComponent(formData.phone)}`;
+            
+            try {
+                // Отправляем сообщение в Telegram через fetch
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}`, {
+                    method: 'GET'
+                });
+                
+                const data = await response.json();
+                return data.ok;
+            } catch (error) {
+                console.error('Ошибка отправки в Telegram:', error);
+                return false;
+            }
+        }
+        
+        // Обработка отправки формы
+        carForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Получаем данные из формы
+            const formData = {
+                brand: document.getElementById('brand').value,
+                model: document.getElementById('model').value,
+                year: document.getElementById('year').value,
+                price: document.getElementById('price').value,
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value
+            };
+            
+            // Валидация формы
+            const error = validateForm(formData);
+            if (error) {
+                showNotification(error, true);
+                return;
+            }
+            
+            // Показываем лоадер
+            loader.style.display = 'flex';
+            
+            try {
+                // Отправляем данные в Telegram
+                const success = await sendToTelegram(formData);
+                
+                // Скрываем лоадер
+                loader.style.display = 'none';
+                
+                if (success) {
+                    // Показываем сообщение об успехе
+                    showNotification('Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.');
+                    
+                    // Закрываем модальное окно и сбрасываем форму
+                    setTimeout(() => {
+                        carModal.classList.remove('visible');
+                        document.body.style.overflow = 'auto';
+                        carForm.reset();
+                    }, 2000);
+                } else {
+                    showNotification('Ошибка отправки формы. Попробуйте еще раз или свяжитесь с нами по телефону.', true);
+                }
+            } catch (error) {
+                // Скрываем лоадер
+                loader.style.display = 'none';
+                
+                showNotification('Ошибка отправки формы. Позвоните нам для оформления заявки.', true);
+                console.error('Ошибка:', error);
+            }
+        });
+        
+        // Анимация появления элементов при скролле
+        const featureCards = document.querySelectorAll('.feature-card');
+        
+        function checkVisibility() {
+            featureCards.forEach(card => {
+                const position = card.getBoundingClientRect();
+                
+                // Если элемент в области видимости
+                if(position.top < window.innerHeight - 100) {
+                    card.classList.add('visible');
+                    // Добавляем задержку для каждой карточки
+                    card.style.transitionDelay = `${Array.from(featureCards).indexOf(card) * 0.2}s`;
+                }
+            });
+        }
+        
+        // Проверяем при загрузке и при скролле
+        window.addEventListener('load', checkVisibility);
+        window.addEventListener('scroll', checkVisibility);
+        
+        // Инициализация при загрузке
+        checkVisibility();
+
+        // Простая маска для телефона
+        const phoneInput = document.getElementById('phone');
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            // Ограничиваем длину номера
+            if (value.length > 11) {
+                value = value.substring(0, 11);
+            }
+            
+            // Форматируем номер
+            let formattedValue = '';
+            if (value.length > 0) {
+                formattedValue = '+7 ';
+                if (value.length > 1) {
+                    formattedValue += '(' + value.substring(1, 4);
+                }
+                if (value.length > 4) {
+                    formattedValue += ') ' + value.substring(4, 7);
+                }
+                if (value.length > 7) {
+                    formattedValue += '-' + value.substring(7, 9);
+                }
+                if (value.length > 9) {
+                    formattedValue += '-' + value.substring(9, 11);
+                }
+            }
+            
+            e.target.value = formattedValue;
+        });
+    </script>
+</body>
+</html>
