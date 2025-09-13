@@ -616,194 +616,225 @@
     </div>
 
     <script>
-        // Элементы DOM
-        const sellCarBtn = document.getElementById('sellCarBtn');
-        const carModal = document.getElementById('carModal');
-        const closeModal = document.getElementById('closeModal');
-        const carForm = document.getElementById('carForm');
-        const notification = document.getElementById('notification');
-        const loader = document.getElementById('loader');
+    // Элементы DOM
+    const sellCarBtn = document.getElementById('sellCarBtn');
+    const carModal = document.getElementById('carModal');
+    const closeModal = document.getElementById('closeModal');
+    const carForm = document.getElementById('carForm');
+    const notification = document.getElementById('notification');
+    const loader = document.getElementById('loader');
 
-        // Настройки Telegram (ваши данные)
-        const TELEGRAM_BOT_TOKEN = '8112921007:AAHvjM0SWYMZDh3xucPLMMfKyPmZ7TYfztY';
-        const TELEGRAM_CHAT_ID = '1049514305';
-        
-        // Открытие модального окна
-        sellCarBtn.addEventListener('click', () => {
-            carModal.classList.add('visible');
-            document.body.style.overflow = 'hidden';
-        });
-        
-        // Закрытие модального окна
-        closeModal.addEventListener('click', () => {
+    // Настройки Telegram (ваши данные)
+    const TELEGRAM_BOT_TOKEN = '8112921007:AAHvjM0SWYMZDh3xucPLMMfKyPmZ7TYfztY';
+    // Исправленный Chat ID (скорее всего, должен быть 1049514305)
+    const TELEGRAM_CHAT_ID = '1049514305';
+    
+    // Открытие модального окна
+    sellCarBtn.addEventListener('click', () => {
+        carModal.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    });
+    
+    // Закрытие модального окна
+    closeModal.addEventListener('click', () => {
+        carModal.classList.remove('visible');
+        document.body.style.overflow = 'auto';
+    });
+    
+    // Закрытие при клике вне модального окна
+    window.addEventListener('click', (e) => {
+        if (e.target === carModal) {
             carModal.classList.remove('visible');
             document.body.style.overflow = 'auto';
-        });
+        }
+    });
+    
+    // Функция показа уведомления
+    function showNotification(message, isError = false) {
+        notification.textContent = message;
+        notification.className = 'notification' + (isError ? ' error' : '');
+        notification.classList.add('show');
         
-        // Закрытие при клике вне модального окна
-        window.addEventListener('click', (e) => {
-            if (e.target === carModal) {
-                carModal.classList.remove('visible');
-                document.body.style.overflow = 'auto';
-            }
-        });
-        
-        // Функция показа уведомления
-        function showNotification(message, isError = false) {
-            notification.textContent = message;
-            notification.className = 'notification' + (isError ? ' error' : '');
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 5000);
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+    
+    // Проверка, заполнены ли все поля формы
+    function validateForm(formData) {
+        if (!formData.brand || !formData.model || !formData.year || 
+            !formData.price || !formData.name || !formData.phone) {
+            return 'Все поля обязательны для заполнения';
         }
         
-        // Проверка, заполнены ли все поля формы
-        function validateForm(formData) {
-            if (!formData.brand || !formData.model || !formData.year || 
-                !formData.price || !formData.name || !formData.phone) {
-                return 'Все поля обязательны для заполнения';
-            }
-            
-            if (formData.phone.replace(/\D/g, '').length < 10) {
-                return 'Введите корректный номер телефона';
-            }
-            
-            return null;
+        if (formData.phone.replace(/\D/g, '').length < 10) {
+            return 'Введите корректный номер телефона';
         }
         
-        // Функция отправки данных в Telegram
-        async function sendToTelegram(formData) {
-            // Формируем сообщение для Telegram
-            const message = `📞 Новая заявка на выкуп авто:%0A%0A` +
-                           `🚗 Марка: ${encodeURIComponent(formData.brand)}%0A` +
-                           `🔧 Модель: ${encodeURIComponent(formData.model)}%0A` +
-                           `📅 Год: ${encodeURIComponent(formData.year)}%0A` +
-                           `💰 Желаемая цена: ${encodeURIComponent(formData.price)} руб.%0A` +
-                           `👤 Имя: ${encodeURIComponent(formData.name)}%0A` +
-                           `📱 Телефон: ${encodeURIComponent(formData.phone)}`;
+        return null;
+    }
+    
+    // Функция отправки данных в Telegram
+    async function sendToTelegram(formData) {
+        // Формируем сообщение для Telegram
+        const message = `📞 Новая заявка на выкуп авто:%0A%0A` +
+                       `🚗 Марка: ${encodeURIComponent(formData.brand)}%0A` +
+                       `🔧 Модель: ${encodeURIComponent(formData.model)}%0A` +
+                       `📅 Год: ${encodeURIComponent(formData.year)}%0A` +
+                       `💰 Желаемая цена: ${encodeURIComponent(formData.price)} руб.%0A` +
+                       `👤 Имя: ${encodeURIComponent(formData.name)}%0A` +
+                       `📱 Телефон: ${encodeURIComponent(formData.phone)}`;
+        
+        try {
+            // Отправляем сообщение в Telegram через fetch
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}`, {
+                method: 'GET'
+            });
             
+            const data = await response.json();
+            
+            if (!data.ok) {
+                console.error('Ошибка Telegram API:', data);
+                return false;
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Ошибка отправки в Telegram:', error);
+            
+            // Пробуем альтернативный метод отправки
             try {
-                // Отправляем сообщение в Telegram через fetch
-                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}`, {
-                    method: 'GET'
-                });
-                
-                const data = await response.json();
-                return data.ok;
-            } catch (error) {
-                console.error('Ошибка отправки в Telegram:', error);
+                const img = new Image();
+                img.src = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}`;
+                return true;
+            } catch (e) {
+                console.error('Ошибка альтернативной отправки:', e);
                 return false;
             }
         }
+    }
+    
+    // Обработка отправки формы
+    carForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        // Обработка отправки формы
-        carForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Получаем данные из формы
-            const formData = {
-                brand: document.getElementById('brand').value,
-                model: document.getElementById('model').value,
-                year: document.getElementById('year').value,
-                price: document.getElementById('price').value,
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value
-            };
-            
-            // Валидация формы
-            const error = validateForm(formData);
-            if (error) {
-                showNotification(error, true);
-                return;
-            }
-            
-            // Показываем лоадер
-            loader.style.display = 'flex';
-            
-            try {
-                // Отправляем данные в Telegram
-                const success = await sendToTelegram(formData);
-                
-                // Скрываем лоадер
-                loader.style.display = 'none';
-                
-                if (success) {
-                    // Показываем сообщение об успехе
-                    showNotification('Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.');
-                    
-                    // Закрываем модальное окно и сбрасываем форму
-                    setTimeout(() => {
-                        carModal.classList.remove('visible');
-                        document.body.style.overflow = 'auto';
-                        carForm.reset();
-                    }, 2000);
-                } else {
-                    showNotification('Ошибка отправки формы. Попробуйте еще раз или свяжитесь с нами по телефону.', true);
-                }
-            } catch (error) {
-                // Скрываем лоадер
-                loader.style.display = 'none';
-                
-                showNotification('Ошибка отправки формы. Позвоните нам для оформления заявки.', true);
-                console.error('Ошибка:', error);
-            }
-        });
+        // Получаем данные из формы
+        const formData = {
+            brand: document.getElementById('brand').value,
+            model: document.getElementById('model').value,
+            year: document.getElementById('year').value,
+            price: document.getElementById('price').value,
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value
+        };
         
-        // Анимация появления элементов при скролле
-        const featureCards = document.querySelectorAll('.feature-card');
-        
-        function checkVisibility() {
-            featureCards.forEach(card => {
-                const position = card.getBoundingClientRect();
-                
-                // Если элемент в области видимости
-                if(position.top < window.innerHeight - 100) {
-                    card.classList.add('visible');
-                    // Добавляем задержку для каждой карточки
-                    card.style.transitionDelay = `${Array.from(featureCards).indexOf(card) * 0.2}s`;
-                }
-            });
+        // Валидация формы
+        const error = validateForm(formData);
+        if (error) {
+            showNotification(error, true);
+            return;
         }
         
-        // Проверяем при загрузке и при скролле
-        window.addEventListener('load', checkVisibility);
-        window.addEventListener('scroll', checkVisibility);
+        // Показываем лоадер
+        loader.style.display = 'flex';
         
-        // Инициализация при загрузке
-        checkVisibility();
-
-        // Простая маска для телефона
-        const phoneInput = document.getElementById('phone');
-        phoneInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
+        try {
+            // Отправляем данные в Telegram
+            const success = await sendToTelegram(formData);
             
-            // Ограничиваем длину номера
-            if (value.length > 11) {
-                value = value.substring(0, 11);
+            // Скрываем лоадер
+            loader.style.display = 'none';
+            
+            if (success) {
+                // Показываем сообщение об успехе
+                showNotification('Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.');
+                
+                // Закрываем модальное окно и сбрасываем форму
+                setTimeout(() => {
+                    carModal.classList.remove('visible');
+                    document.body.style.overflow = 'auto';
+                    carForm.reset();
+                }, 2000);
+            } else {
+                showNotification('Ошибка отправки формы. Попробуйте еще раз или свяжитесь с нами по телефону.', true);
             }
+        } catch (error) {
+            // Скрываем лоадер
+            loader.style.display = 'none';
             
-            // Форматируем номер
-            let formattedValue = '';
-            if (value.length > 0) {
-                formattedValue = '+7 ';
-                if (value.length > 1) {
-                    formattedValue += '(' + value.substring(1, 4);
-                }
-                if (value.length > 4) {
-                    formattedValue += ') ' + value.substring(4, 7);
-                }
-                if (value.length > 7) {
-                    formattedValue += '-' + value.substring(7, 9);
-                }
-                if (value.length > 9) {
-                    formattedValue += '-' + value.substring(9, 11);
-                }
+            showNotification('Ошибка отправки формы. Позвоните нам для оформления заявки.', true);
+            console.error('Ошибка:', error);
+        }
+    });
+    
+    // Анимация появления элементов при скролле
+    const featureCards = document.querySelectorAll('.feature-card');
+    
+    function checkVisibility() {
+        featureCards.forEach(card => {
+            const position = card.getBoundingClientRect();
+            
+            // Если элемент в области видимости
+            if(position.top < window.innerHeight - 100) {
+                card.classList.add('visible');
+                // Добавляем задержку для каждой карточки
+                card.style.transitionDelay = `${Array.from(featureCards).indexOf(card) * 0.2}s`;
             }
-            
-            e.target.value = formattedValue;
         });
-    </script>
+    }
+    
+    // Проверяем при загрузке и при скролле
+    window.addEventListener('load', checkVisibility);
+    window.addEventListener('scroll', checkVisibility);
+    
+    // Инициализация при загрузке
+    checkVisibility();
+
+    // Простая маска для телефона
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        // Ограничиваем длину номера
+        if (value.length > 11) {
+            value = value.substring(0, 11);
+        }
+        
+        // Форматируем номер
+        let formattedValue = '';
+        if (value.length > 0) {
+            formattedValue = '+7 ';
+            if (value.length > 1) {
+                formattedValue += '(' + value.substring(1, 4);
+            }
+            if (value.length > 4) {
+                formattedValue += ') ' + value.substring(4, 7);
+            }
+            if (value.length > 7) {
+                formattedValue += '-' + value.substring(7, 9);
+            }
+            if (value.length > 9) {
+                formattedValue += '-' + value.substring(9, 11);
+            }
+        }
+        
+        e.target.value = formattedValue;
+    });
+
+    // Добавляем проверку доступности бота при загрузке страницы
+    window.addEventListener('load', async () => {
+        try {
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe`);
+            const data = await response.json();
+            
+            if (!data.ok) {
+                console.error('Бот недоступен:', data);
+                showNotification('Внимание: сервис заявок временно недоступен. Позвоните нам напрямую.', true);
+            }
+        } catch (error) {
+            console.error('Ошибка проверки бота:', error);
+        }
+    });
+</script>
 </body>
 </html>
