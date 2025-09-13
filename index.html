@@ -928,6 +928,97 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+        //123
+// Добавляем секцию контактов
+const contactsSection = `
+<section class="contacts" id="contacts" style="padding: 100px 5%; background: #f8f8f8; position: relative;">
+    <div style="text-align: center; margin-bottom: 60px;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px; position: relative;">
+            Контакты
+        </h2>
+        <div style="height: 3px; width: 100px; background: #ff0000; margin: 0 auto;"></div>
+        <p style="font-size: 1.2rem; margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto;">
+            Свяжитесь с нами любым удобным способом. Мы всегда на связи!
+        </p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 800px; margin: 0 auto;">
+        <div style="text-align: center; padding: 40px 30px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; border-left: 4px solid #ff0000;">
+            <div style="font-size: 60px; margin-bottom: 25px;">📱</div>
+            <h3 style="font-size: 1.4rem; margin-bottom: 15px; color: #333;">Телефон</h3>
+            <a href="tel:+79142559901" style="font-size: 1.3rem; color: #ff0000; text-decoration: none; font-weight: 600; display: block; margin: 10px 0;">
+                +7 914 255 9901
+            </a>
+            <p style="color: #666; margin-top: 10px;">Звоните в любое время</p>
+        </div>
+        
+        <div style="text-align: center; padding: 40px 30px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; border-left: 4px solid #0088cc;">
+            <div style="font-size: 60px; margin-bottom: 25px;">✈️</div>
+            <h3 style="font-size: 1.4rem; margin-bottom: 15px; color: #333;">Telegram</h3>
+            <a href="https://t.me/Kirill_avtovykup" target="_blank" style="font-size: 1.3rem; color: #0088cc; text-decoration: none; font-weight: 600; display: block; margin: 10px 0;">
+                @Kirill_avtovykup
+            </a>
+            <p style="color: #666; margin-top: 10px;">Быстрый ответ в мессенджере</p>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px;">
+        <p style="font-size: 1.1rem; color: #666; max-width: 600px; margin: 0 auto;">
+            ⚡ Работаем ежедневно с 8:00 до 22:00. Выкуп авто в день обращения!
+        </p>
+    </div>
+</section>
+
+<style>
+.contacts div div:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.contacts a:hover {
+    color: #000 !important;
+    text-decoration: underline !important;
+}
+
+/* Анимация иконок */
+.contacts div div {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.contacts div div:nth-child(1) { animation-delay: 0.1s; }
+.contacts div div:nth-child(2) { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+`;
+
+// Вставляем секцию контактов в конец body
+document.addEventListener('DOMContentLoaded', function() {
+    // Находим последнюю секцию
+    const lastSection = document.querySelector('section:last-of-type');
+    if (lastSection) {
+        lastSection.insertAdjacentHTML('afterend', contactsSection);
+    } else {
+        document.body.insertAdjacentHTML('beforeend', contactsSection);
+    }
+
+    // Обновляем навигационную ссылку
+    const navLinks = document.querySelectorAll('nav ul li a');
+    navLinks.forEach(link => {
+        if (link.textContent === 'Контакты') {
+            link.setAttribute('href', '#contacts');
+        }
+    });
+});
 </script>
 </body>
 </html>
