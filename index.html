@@ -1688,124 +1688,62 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(logoStyles);
     }
 });
-// Уменьшаем размер модального окна
-document.addEventListener('DOMContentLoaded', function() {
-    // Находим модальное окно
-    const modalContent = document.querySelector('.modal-content');
-    
-    if (modalContent) {
-        // Уменьшаем размеры
-        Object.assign(modalContent.style, {
-            maxWidth: '400px',
-            padding: '25px',
-            margin: '20px'
-        });
-        
-        // Уменьшаем заголовок
-        const modalTitle = modalContent.querySelector('h2');
-        if (modalTitle) {
-            modalTitle.style.fontSize = '1.6rem';
-            modalTitle.style.marginBottom = '15px';
-        }
-        
-        // Уменьшаем форму
-        const formGroups = modalContent.querySelectorAll('.form-group');
-        formGroups.forEach(group => {
-            group.style.marginBottom = '15px';
-            
-            // Уменьшаем labels
-            const label = group.querySelector('label');
-            if (label) {
-                label.style.fontSize = '14px';
-                label.style.marginBottom = '6px';
-            }
-            
-            // Уменьшаем inputs
-            const input = group.querySelector('input, select');
-            if (input) {
-                input.style.padding = '10px 12px';
-                input.style.fontSize = '14px';
-            }
-        });
-        
-        // Уменьшаем кнопку
-        const submitBtn = modalContent.querySelector('.submit-btn');
-        if (submitBtn) {
-            submitBtn.style.padding = '12px';
-            submitBtn.style.fontSize = '1rem';
-        }
-        
-        // Уменьшаем иконку закрытия
-        const closeBtn = modalContent.querySelector('.close');
-        if (closeBtn) {
-            closeBtn.style.fontSize = '20px';
-            closeBtn.style.top = '10px';
-            closeBtn.style.right = '10px';
-        }
-        
-        // Добавляем стили для мобильных устройств
-        const modalStyles = document.createElement('style');
-        modalStyles.textContent = `
-            @media (max-width: 480px) {
-                .modal-content {
-                    max-width: 95% !important;
-                    padding: 20px 15px !important;
-                    margin: 10px !important;
-                }
-                
-                .modal-content h2 {
-                    font-size: 1.4rem !important;
-                }
-                
-                .form-group input, .form-group select {
-                    padding: 8px 10px !important;
-                    font-size: 13px !important;
-                }
-                
-                .submit-btn {
-                    padding: 10px !important;
-                    font-size: 14px !important;
-                }
-            }
-            
-            /* Убедимся что модальное окно всегда по центру */
-            .modal {
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                padding: 20px !important;
-            }
-            
-            /* Скролл внутри модального окна если нужно */
-            .modal-content {
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-        `;
-        document.head.appendChild(modalStyles);
-    }
-});
+// Обновляем функцию отправки в Telegram для нескольких получателей
+async function sendToTelegram(formData) {
+    const message = `📞 Новая заявка на выкуп авто:%0A%0A` +
+                   `🚗 Марка: ${encodeURIComponent(formData.brand)}%0A` +
+                   `🔧 Модель: ${encodeURIComponent(formData.model)}%0A` +
+                   `📅 Год: ${encodeURIComponent(formData.year)}%0A` +
+                   `💰 Желаемая цена: ${encodeURIComponent(formData.price)} руб.%0A` +
+                   `👤 Имя: ${encodeURIComponent(formData.name)}%0A` +
+                   `📱 Телефон: ${encodeURIComponent(formData.phone)}`;
 
-// Также уменьшаем заголовок в модалке
-const modalTitleStyle = document.createElement('style');
-modalTitleStyle.textContent = `
-    .modal h2:after {
-        width: 40px !important;
-        height: 2px !important;
-        bottom: -8px !important;
+    // Массив chat_id получателей (добавьте нужные ID)
+    const chatIds = [
+        '1049514305', // ваш основной chat_id
+        'ДОБАВЬТЕ_СЮДА_ВТОРОЙ_CHAT_ID' // второй получатель
+    ];
+
+    const results = await Promise.allSettled(
+        chatIds.map(chatId => sendToSingleChat(message, chatId))
+    );
+
+    // Возвращаем true если хотя бы одна отправка успешна
+    return results.some(result => result.status === 'fulfilled' && result.value === true);
+}
+
+// Функция отправки одному получателю
+async function sendToSingleChat(message, chatId) {
+    try {
+        const proxy = PROXY_SERVERS[Math.floor(Math.random() * PROXY_SERVERS.length)];
+        const url = `${proxy}https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${message}`;
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            return data.ok === true;
+        }
+    } catch (error) {
+        console.log(`Ошибка отправки для chat_id ${chatId}:`, error);
+        
+        // Пробуем альтернативный метод
+        try {
+            const img = new Image();
+            img.src = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${message}`;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
-    
-    /* Уменьшаем отступы между полями */
-    .form-group {
-        margin-bottom: 15px !important;
-    }
-    
-    /* Делаем placeholder меньше */
-    input::placeholder, select::placeholder {
-        font-size: 13px !important;
-    }
-`;
-document.head.appendChild(modalTitleStyle);
+    return false;
+}
 </script>
 </body>
 </html>
