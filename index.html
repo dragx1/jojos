@@ -1688,62 +1688,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(logoStyles);
     }
 });
-// Обновляем функцию отправки в Telegram для нескольких получателей
-async function sendToTelegram(formData) {
-    const message = `📞 Новая заявка на выкуп авто:%0A%0A` +
-                   `🚗 Марка: ${encodeURIComponent(formData.brand)}%0A` +
-                   `🔧 Модель: ${encodeURIComponent(formData.model)}%0A` +
-                   `📅 Год: ${encodeURIComponent(formData.year)}%0A` +
-                   `💰 Желаемая цена: ${encodeURIComponent(formData.price)} руб.%0A` +
-                   `👤 Имя: ${encodeURIComponent(formData.name)}%0A` +
-                   `📱 Телефон: ${encodeURIComponent(formData.phone)}`;
-
-    // Массив chat_id получателей (добавьте нужные ID)
-    const chatIds = [
-        '1049514305', // ваш основной chat_id
-        'ДОБАВЬТЕ_СЮДА_ВТОРОЙ_CHAT_ID' // второй получатель
-    ];
-
-    const results = await Promise.allSettled(
-        chatIds.map(chatId => sendToSingleChat(message, chatId))
-    );
-
-    // Возвращаем true если хотя бы одна отправка успешна
-    return results.some(result => result.status === 'fulfilled' && result.value === true);
-}
-
-// Функция отправки одному получателю
-async function sendToSingleChat(message, chatId) {
-    try {
-        const proxy = PROXY_SERVERS[Math.floor(Math.random() * PROXY_SERVERS.length)];
-        const url = `${proxy}https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${message}`;
-        
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            return data.ok === true;
-        }
-    } catch (error) {
-        console.log(`Ошибка отправки для chat_id ${chatId}:`, error);
-        
-        // Пробуем альтернативный метод
-        try {
-            const img = new Image();
-            img.src = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${message}`;
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }
-    return false;
-}
 </script>
 </body>
 </html>
