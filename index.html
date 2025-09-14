@@ -1607,6 +1607,87 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(footerStyles);
 });
+// Делаем надпись АвтоВыкуп.Крым более стильной
+document.addEventListener('DOMContentLoaded', function() {
+    // Находим логотип
+    const logo = document.querySelector('.logo');
+    
+    if (logo) {
+        // Сохраняем оригинальный текст
+        const originalText = logo.innerHTML;
+        
+        // Заменяем на стилизованную версию
+        logo.innerHTML = `
+            <span style="
+                font-size: 28px;
+                font-weight: 800;
+                background: linear-gradient(45deg, #000000, #ffd700, #000000);
+                background-size: 200% 100%;
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+                animation: logoGlow 3s ease-in-out infinite;
+                position: relative;
+                display: inline-block;
+            ">
+                Авто<span style="color: #ff0000; text-shadow: 0 0 10px rgba(255, 0, 0, 0.4);">Выкуп</span>.Крым
+            </span>
+            <span style="
+                position: absolute;
+                bottom: -5px;
+                left: 0;
+                width: 100%;
+                height: 2px;
+                background: linear-gradient(90deg, transparent, #ffd700, transparent);
+                animation: logoUnderline 3s ease-in-out infinite;
+            "></span>
+        `;
+        
+        // Добавляем стили для анимации
+        const logoStyles = document.createElement('style');
+        logoStyles.textContent = `
+            @keyframes logoGlow {
+                0%, 100% {
+                    background-position: 0% 50%;
+                    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+                }
+                50% {
+                    background-position: 100% 50%;
+                    text-shadow: 0 0 25px rgba(255, 215, 0, 0.6), 
+                                 0 0 35px rgba(255, 215, 0, 0.3);
+                }
+            }
+            
+            @keyframes logoUnderline {
+                0%, 100% {
+                    opacity: 0.7;
+                    transform: scaleX(0.9);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scaleX(1.1);
+                    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+                }
+            }
+            
+            .logo {
+                position: relative;
+                display: inline-block;
+                padding-bottom: 5px;
+            }
+            
+            .logo:hover span:first-child {
+                animation: logoGlow 1s ease-in-out infinite;
+            }
+            
+            .logo:hover span:last-child {
+                animation: logoUnderline 1s ease-in-out infinite;
+            }
+        `;
+        document.head.appendChild(logoStyles);
+    }
+});
 </script>
 </body>
 </html>
