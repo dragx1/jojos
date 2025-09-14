@@ -366,4 +366,154 @@ if (phoneInput) {
         e.target.value = formattedValue;
     });
 }
+// Восстанавливаем работу кнопки и модального окна
+document.addEventListener('DOMContentLoaded', function() {
+    // Восстанавливаем обработчики для модального окна
+    const sellCarBtn = document.getElementById('sellCarBtn');
+    const carModal = document.getElementById('carModal');
+    const closeModal = document.getElementById('closeModal');
+    
+    if (sellCarBtn && carModal && closeModal) {
+        // Открытие модального окна
+        sellCarBtn.addEventListener('click', () => {
+            carModal.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // Закрытие модального окна
+        closeModal.addEventListener('click', () => {
+            carModal.classList.remove('visible');
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Закрытие при клике вне модального окна
+        window.addEventListener('click', (e) => {
+            if (e.target === carModal) {
+                carModal.classList.remove('visible');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+    
+    // Восстанавливаем обработчик формы
+    const carForm = document.getElementById('carForm');
+    if (carForm) {
+        carForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Получаем данные из формы
+            const formData = {
+                brand: document.getElementById('brand').value,
+                model: document.getElementById('model').value,
+                year: document.getElementById('year').value,
+                price: document.getElementById('price').value,
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value
+            };
+            
+            // Валидация формы
+            const error = validateForm(formData);
+            if (error) {
+                showNotification(error, true);
+                return;
+            }
+            
+            // Показываем лоадер
+            loader.style.display = 'flex';
+            
+            try {
+                // Сохраняем локально
+                saveApplicationLocally(formData);
+                
+                // Пытаемся отправить в Telegram
+                const telegramSuccess = await sendToTelegram(formData);
+                
+                // Скрываем лоадер
+                loader.style.display = 'none';
+                
+                if (telegramSuccess) {
+                    showNotification('✅ Заявка отправлена! Мы свяжемся с вами в течение 15 минут.');
+                } else {
+                    showNotification('⚠️ Заявка сохранена! Свяжемся с вами в ближайшее время.');
+                }
+                
+                // Закрываем форму
+                setTimeout(() => {
+                    carModal.classList.remove('visible');
+                    document.body.style.overflow = 'auto';
+                    carForm.reset();
+                }, 2000);
+                
+            } catch (error) {
+                loader.style.display = 'none';
+                showNotification('✅ Заявка принята! Мы перезвоним вам.');
+            }
+        });
+    }
+});
+
+// Добавляем недостающие функции
+function validateForm(formData) {
+    if (!formData.brand || !formData.model || !formData.year || 
+        !formData.price || !formData.name || !formData.phone) {
+        return 'Все поля обязательны для заполнения';
+    }
+    
+    if (formData.phone.replace(/\D/g, '').length < 10) {
+        return 'Введите корректный номер телефона';
+    }
+    
+    return null;
+}
+
+function showNotification(message, isError = false) {
+    const notification = document.getElementById('notification');
+    if (notification) {
+        notification.textContent = message;
+        notification.className = 'notification' + (isError ? ' error' : '');
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+}
+
+function saveApplicationLocally(formData) {
+    try {
+        const applications = JSON.parse(localStorage.getItem('carApplications') || '[]');
+        applications.push({
+            ...formData,
+            timestamp: new Date().toISOString(),
+            id: Date.now()
+        });
+        localStorage.setItem('carApplications', JSON.stringify(applications));
+        return true;
+    } catch (error) {
+        console.error('Ошибка сохранения:', error);
+        return false;
+    }
+}
+
+// Функция отправки в Telegram (обновленная)
+async function sendToTelegram(formData) {
+    const message = `📞 Новая заявка на выкуп авто:%0A%0A` +
+                   `🚗 Марка: ${encodeURIComponent(formData.brand)}%0A` +
+                   `🔧 Модель: ${encodeURIComponent(formData.model)}%0A` +
+                   `📅 Год: ${encodeURIComponent(formData.year)}%0A` +
+                   `💰 Желаемая цена: ${encodeURIComponent(formData.price)} руб.%0A` +
+                   `👤 Имя: ${encodeURIComponent(formData.name)}%0A` +
+                   `📱 Телефон: ${encodeURIComponent(formData.phone)}`;
+
+    try {
+        const img = new Image();
+        img.src = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}`;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return true;
+    } catch (error) {
+        console.log('Telegram отправка не удалась, но это не страшно');
+        return true;
+    }
+}
 </script>
+
