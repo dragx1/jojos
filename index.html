@@ -1425,8 +1425,117 @@ const buttonStyles = `
 }
 </style>
 `;
-
 document.head.insertAdjacentHTML('beforeend', buttonStyles);
+// Добавляем легкую анимацию на существующий фон
+document.addEventListener('DOMContentLoaded', function() {
+    // Находим существующий фон hero секции
+    const heroSection = document.querySelector('.hero');
+    
+    if (heroSection) {
+        // Добавляем легкую анимацию градиента
+        const style = document.createElement('style');
+        style.textContent = `
+            .hero::before {
+                animation: gentleMove 20s ease-in-out infinite;
+            }
+            
+            @keyframes gentleMove {
+                0% {
+                    transform: scale(1) translateX(0) translateY(0);
+                }
+                33% {
+                    transform: scale(1.05) translateX(-2%) translateY(-1%);
+                }
+                66% {
+                    transform: scale(1.03) translateX(2%) translateY(1%);
+                }
+                100% {
+                    transform: scale(1) translateX(0) translateY(0);
+                }
+            }
+            
+            /* Легкое мерцание градиента */
+            .hero {
+                animation: subtleGlow 8s ease-in-out infinite;
+            }
+            
+            @keyframes subtleGlow {
+                0%, 100% {
+                    background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+                               url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="black" opacity="0.1"/><path d="M0 0L100 100" stroke="black" stroke-width="1" opacity="0.1"/><path d="M100 0L0 100" stroke="black" stroke-width="1" opacity="0.1"/></svg>'),
+                               url('https://images.unsplash.com/photo-1549399542-7e82138a0d6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+                }
+                50% {
+                    background: linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)),
+                               url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="black" opacity="0.1"/><path d="M0 0L100 100" stroke="black" stroke-width="1" opacity="0.1"/><path d="M100 0L0 100" stroke="black" stroke-width="1" opacity="0.1"/></svg>'),
+                               url('https://images.unsplash.com/photo-1549399542-7e82138a0d6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Добавляем легкую анимацию для features секции
+    const featuresSection = document.querySelector('.features');
+    if (featuresSection) {
+        const featuresStyle = document.createElement('style');
+        featuresStyle.textContent = `
+            .features::before {
+                animation: featuresFloat 25s ease-in-out infinite;
+            }
+            
+            @keyframes featuresFloat {
+                0% {
+                    transform: scale(1) rotate(0deg);
+                    opacity: 0.05;
+                }
+                50% {
+                    transform: scale(1.1) rotate(1deg);
+                    opacity: 0.07;
+                }
+                100% {
+                    transform: scale(1) rotate(0deg);
+                    opacity: 0.05;
+                }
+            }
+        `;
+        document.head.appendChild(featuresStyle);
+    }
+    
+    // Добавляем едва заметные движущиеся точки на фон
+    const movingDots = document.createElement('div');
+    movingDots.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.1;
+        background-image: 
+            radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.3) 1px, transparent 1px),
+            radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.2) 1px, transparent 1px);
+        background-size: 100px 100px, 150px 150px;
+        animation: dotsMove 40s linear infinite;
+    `;
+    
+    document.body.appendChild(movingDots);
+    
+    // Стили для движущихся точек
+    const dotsStyle = document.createElement('style');
+    dotsStyle.textContent = `
+        @keyframes dotsMove {
+            0% {
+                background-position: 0 0, 0 0;
+            }
+            100% {
+                background-position: 100px 100px, 150px 150px;
+            }
+        }
+    `;
+    document.head.appendChild(dotsStyle);
+});
 </script>
 </body>
 </html>
