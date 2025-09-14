@@ -676,16 +676,27 @@ function validateForm(formData) {
     return null;
 }
 
-// Основная функция отправки в Telegram нескольким получателям
+// Основная функция отправки в Telegram через PHP прокси
 async function sendToTelegram(formData) {
-    const message = `📞 Новая заявка на выкуп авто:%0A%0A` +
-                   `🚗 Марка: ${encodeURIComponent(formData.brand)}%0A` +
-                   `🔧 Модель: ${encodeURIComponent(formData.model)}%0A` +
-                   `📅 Год: ${encodeURIComponent(formData.year)}%0A` +
-                   `💰 Желаемая цена: ${encodeURIComponent(formData.price)} руб.%0A` +
-                   `👤 Имя: ${encodeURIComponent(formData.name)}%0A` +
-                   `📱 Телефон: ${encodeURIComponent(formData.phone)}`;
-
+    try {
+        const response = await fetch('https://ваш-сайт.ru/telegram.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            return result.success;
+        }
+        return false;
+    } catch (error) {
+        console.log('Ошибка отправки через PHP:', error);
+        return false;
+    }
+}
     // Отправляем сообщение всем получателям
     const sendPromises = [];
     
