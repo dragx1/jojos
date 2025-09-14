@@ -624,221 +624,215 @@
     const notification = document.getElementById('notification');
     const loader = document.getElementById('loader');
 
-    // Настройки Telegram - отправка нескольким получателям
-const TELEGRAM_BOT_TOKEN = '8112921007:AAHvjM0SWYMZDh3xucPLMMfKyPmZ7TYfztY';
-const TELEGRAM_CHAT_IDS = [
-    '1049514305', // Основной получатель
-    '1039331603' // Дополнительный получатель (добавьте сюда нужные ID через запятую)
-];
-
-// Открытие модального окна
-sellCarBtn.addEventListener('click', () => {
-    carModal.classList.add('visible');
-    document.body.style.overflow = 'hidden';
-});
-
-// Закрытие модального окна
-closeModal.addEventListener('click', () => {
-    carModal.classList.remove('visible');
-    document.body.style.overflow = 'auto';
-});
-
-// Закрытие при клике вне модального окна
-window.addEventListener('click', (e) => {
-    if (e.target === carModal) {
+    // Настройки Telegram
+    const TELEGRAM_BOT_TOKEN = '8112921007:AAHvjM0SWYMZDh3xucPLMMfKyPmZ7TYfztY';
+    const TELEGRAM_CHAT_ID = '1049514305';
+    
+    // Список CORS прокси для обхода блокировок
+    const PROXY_SERVERS = [
+        'https://corsproxy.io/?',
+        'https://api.codetabs.com/v1/proxy?quest=',
+        'https://cors-anywhere.herokuapp.com/',
+        'https://proxy.cors.sh/'
+    ];
+    
+    // Открытие модального окна
+    sellCarBtn.addEventListener('click', () => {
+        carModal.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    });
+    
+    // Закрытие модального окна
+    closeModal.addEventListener('click', () => {
         carModal.classList.remove('visible');
         document.body.style.overflow = 'auto';
-    }
-});
-
-// Функция показа уведомления
-function showNotification(message, isError = false) {
-    notification.textContent = message;
-    notification.className = 'notification' + (isError ? ' error' : '');
-    notification.classList.add('show');
+    });
     
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 5000);
-}
-
-// Проверка, заполнены ли все поля формы
-function validateForm(formData) {
-    if (!formData.brand || !formData.model || !formData.year || 
-        !formData.price || !formData.name || !formData.phone) {
-        return 'Все поля обязательны для заполнения';
-    }
-    
-    if (formData.phone.replace(/\D/g, '').length < 10) {
-        return 'Введите корректный номер телефона';
-    }
-    
-    return null;
-}
-
-// Основная функция отправки в Telegram через PHP прокси
-async function sendToTelegram(formData) {
-    try {
-        const response = await fetch('https://ваш-сайт.ru/telegram.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        });
-        
-        if (response.ok) {
-            const result = await response.json();
-            return result.success;
+    // Закрытие при клике вне модального окна
+    window.addEventListener('click', (e) => {
+        if (e.target === carModal) {
+            carModal.classList.remove('visible');
+            document.body.style.overflow = 'auto';
         }
-        return false;
-    } catch (error) {
-        console.log('Ошибка отправки через PHP:', error);
-        return false;
-    }
-}
-    // Отправляем сообщение всем получателям
-    const sendPromises = [];
+    });
     
-    for (const chatId of TELEGRAM_CHAT_IDS) {
-        if (chatId && chatId.trim()) { // Отправляем только если chatId не пустой
-            sendPromises.push(sendMessageToChat(chatId, message));
-        }
-    }
-
-    // Если нет получателей, возвращаем false
-    if (sendPromises.length === 0) {
-        console.log('Нет получателей для отправки');
-        return false;
-    }
-
-    // Пробуем разные методы отправки для каждого получателя
-    const results = await Promise.allSettled(sendPromises);
-
-    // Если хотя бы одно сообщение успешно отправлено
-    return results.some(result => result.status === 'fulfilled' && result.value === true);
-}
-
-// Отправка сообщения конкретному чату
-async function sendMessageToChat(chatId, message) {
-    try {
-        // Пробуем прямой POST запрос (самый надежный способ)
-        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                chat_id: chatId,
-                text: decodeURIComponent(message),
-                parse_mode: 'HTML'
-            })
-        });
+    // Функция показа уведомления
+    function showNotification(message, isError = false) {
+        notification.textContent = message;
+        notification.className = 'notification' + (isError ? ' error' : '');
+        notification.classList.add('show');
         
-        if (response.ok) {
-            console.log(`Сообщение отправлено в чат ${chatId}`);
-            return true;
-        } else {
-            console.log(`Ошибка отправки в чат ${chatId}:`, await response.text());
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+    
+    // Проверка, заполнены ли все поля формы
+    function validateForm(formData) {
+        if (!formData.brand || !formData.model || !formData.year || 
+            !formData.price || !formData.name || !formData.phone) {
+            return 'Все поля обязательны для заполнения';
+        }
+        
+        if (formData.phone.replace(/\D/g, '').length < 10) {
+            return 'Введите корректный номер телефона';
+        }
+        
+        return null;
+    }
+    
+    // Основная функция отправки в Telegram
+    async function sendToTelegram(formData) {
+        const message = `📞 Новая заявка на выкуп авто:%0A%0A` +
+                       `🚗 Марка: ${encodeURIComponent(formData.brand)}%0A` +
+                       `🔧 Модель: ${encodeURIComponent(formData.model)}%0A` +
+                       `📅 Год: ${encodeURIComponent(formData.year)}%0A` +
+                       `💰 Желаемая цена: ${encodeURIComponent(formData.price)} руб.%0A` +
+                       `👤 Имя: ${encodeURIComponent(formData.name)}%0A` +
+                       `📱 Телефон: ${encodeURIComponent(formData.phone)}`;
+
+        // Пробуем разные методы отправки
+        const results = await Promise.allSettled([
+            sendViaProxy(message, 0),
+            sendViaProxy(message, 1),
+            sendViaProxy(message, 2),
+            sendViaProxy(message, 3),
+            sendViaPostRequest(message),
+            sendViaImageMethod(message)
+        ]);
+
+        // Если хотя бы один метод успешен
+        return results.some(result => result.status === 'fulfilled' && result.value === true);
+    }
+
+    // Отправка через прокси сервер
+    async function sendViaProxy(message, proxyIndex) {
+        try {
+            const proxy = PROXY_SERVERS[proxyIndex % PROXY_SERVERS.length];
+            const url = `${proxy}https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}`;
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                return data.ok === true;
+            }
+        } catch (error) {
+            console.log(`Прокси ${proxyIndex} не сработал`);
             return false;
         }
-    } catch (error) {
-        console.log(`Ошибка при отправке в чат ${chatId}:`, error);
-        
-        // Пробуем альтернативный метод с прокси
+    }
+
+    // Отправка через POST запрос (альтернативный метод)
+    async function sendViaPostRequest(message) {
         try {
-            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-            const url = `${proxyUrl}https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-            
-            const proxyResponse = await fetch(url, {
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({
-                    chat_id: chatId,
+                    chat_id: TELEGRAM_CHAT_ID,
                     text: decodeURIComponent(message),
                     parse_mode: 'HTML'
                 })
             });
             
-            return proxyResponse.ok;
-        } catch (proxyError) {
-            console.log('Прокси метод также не сработал');
+            return response.ok;
+        } catch (error) {
+            console.log('POST метод не сработал');
             return false;
         }
     }
-}
 
-// Функция сохранения заявки в localStorage
-function saveApplicationLocally(formData) {
-    try {
-        const applications = JSON.parse(localStorage.getItem('carApplications') || '[]');
-        applications.push({
-            ...formData,
-            timestamp: new Date().toISOString(),
-            id: Date.now()
+    // Отправка через Image объект (самый надежный метод)
+    async function sendViaImageMethod(message) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            
+            // Прямой URL без прокси
+            img.src = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}`;
+            
+            // Таймаут
+            setTimeout(() => resolve(false), 3000);
         });
-        localStorage.setItem('carApplications', JSON.stringify(applications));
-        return true;
-    } catch (error) {
-        console.error('Ошибка сохранения:', error);
-        return false;
     }
-}
 
-// Обработка отправки формы
-carForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = {
-        brand: document.getElementById('brand').value,
-        model: document.getElementById('model').value,
-        year: document.getElementById('year').value,
-        price: document.getElementById('price').value,
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value
-    };
-    
-    // Валидация
-    const error = validateForm(formData);
-    if (error) {
-        showNotification(error, true);
-        return;
+    // Функция сохранения заявки в localStorage
+    function saveApplicationLocally(formData) {
+        try {
+            const applications = JSON.parse(localStorage.getItem('carApplications') || '[]');
+            applications.push({
+                ...formData,
+                timestamp: new Date().toISOString(),
+                id: Date.now()
+            });
+            localStorage.setItem('carApplications', JSON.stringify(applications));
+            return true;
+        } catch (error) {
+            console.error('Ошибка сохранения:', error);
+            return false;
+        }
     }
-    
-    // Показываем лоадер
-    loader.style.display = 'flex';
-    
-    try {
-        // Сохраняем локально
-        saveApplicationLocally(formData);
+
+    // Обработка отправки формы
+    carForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        // Пытаемся отправить в Telegram
-        const telegramSuccess = await sendToTelegram(formData);
+        const formData = {
+            brand: document.getElementById('brand').value,
+            model: document.getElementById('model').value,
+            year: document.getElementById('year').value,
+            price: document.getElementById('price').value,
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value
+        };
         
-        // Скрываем лоадер
-        loader.style.display = 'none';
-        
-        if (telegramSuccess) {
-            showNotification('✅ Заявка отправлена! Мы свяжемся с вами в течение 15 минут.');
-        } else {
-            showNotification('⚠️ Заявка сохранена! Свяжемся с вами в ближайшее время.');
+        // Валидация
+        const error = validateForm(formData);
+        if (error) {
+            showNotification(error, true);
+            return;
         }
         
-        // Закрываем форму
-        setTimeout(() => {
-            carModal.classList.remove('visible');
-            document.body.style.overflow = 'auto';
-            carForm.reset();
-        }, 2000);
+        // Показываем лоадер
+        loader.style.display = 'flex';
         
-    } catch (error) {
-        loader.style.display = 'none';
-        showNotification('✅ Заявка принята! Мы перезвоним вам.');
-    }
-});
+        try {
+            // Сохраняем локально
+            saveApplicationLocally(formData);
+            
+            // Пытаемся отправить в Telegram
+            const telegramSuccess = await sendToTelegram(formData);
+            
+            // Скрываем лоадер
+            loader.style.display = 'none';
+            
+            if (telegramSuccess) {
+                showNotification('✅ Заявка отправлена! Мы свяжемся с вами в течение 15 минут.');
+            } else {
+                showNotification('⚠️ Заявка сохранена! Свяжемся с вами в ближайшее время.');
+            }
+            
+            // Закрываем форму
+            setTimeout(() => {
+                carModal.classList.remove('visible');
+                document.body.style.overflow = 'auto';
+                carForm.reset();
+            }, 2000);
+            
+        } catch (error) {
+            loader.style.display = 'none';
+            showNotification('✅ Заявка принята! Мы перезвоним вам.');
+        }
+    });
 
     // Анимация появления элементов при скролле
     const featureCards = document.querySelectorAll('.feature-card');
