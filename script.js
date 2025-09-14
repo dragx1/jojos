@@ -1,3 +1,4 @@
+<script>
 // Обработчик события загрузки DOM
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация плавной прокрутки для навигационных ссылок
@@ -16,6 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // Настройки Telegram
 const TELEGRAM_BOT_TOKEN = '8112921007:AAHvjM0SWYMZDh3xucPLMMfKyPmZ7TYfztY';
 const TELEGRAM_CHAT_IDS = ['1049514305', '1039331603'];
+
+// Используем CORS-прокси для обхода ограничений
+const CORS_PROXY = 'https://corsproxy.io/?';
+const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
 // Функция для инициализации плавной прокрутки
 function initSmoothScrolling() {
@@ -89,42 +94,89 @@ async function sendToTelegram(formData) {
     // Пробуем разные методы отправки
     for (const chatId of TELEGRAM_CHAT_IDS) {
         try {
-            // 1. Пробуем стандартный метод
-            const standardSent = await sendStandardMethod(chatId, message);
-            if (standardSent) {
+            // Используем CORS-прокси для запроса
+            const response = await fetch(CORS_PROXY + encodeURIComponent(TELEGRAM_API), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            });
+            
+            if (response.ok) {
                 successCount++;
-                continue;
+                console.log(`Сообщение отправлено в чат ${chatId}`);
+            } else {
+                console.error(`Ошибка при отправке в чат ${chatId}:`, await response.text());
+                
+                // Пробуем альтернативный метод с изображением
+                const imageSent = await sendViaImageMethod(chatId, message);
+                if (imageSent) {
+                    successCount++;
+                }
             }
-
-            // 2. Пробуем метод с изображением (самый надежный)
-            const imageSent = await sendViaImageMethod(chatId, message);
-            if (imageSent) {
-                successCount++;
-            }
-
         } catch (error) {
             console.error(`Ошибка при отправке в чат ${chatId}:`, error);
+            
+            // Пробуем альтернативный метод с изображением
+            try {
+                const imageSent = await sendViaImageMethod(chatId, message);
+                if (imageSent) {
+                    successCount++;
+                }
+            } catch (imageError) {
+                console.error(`Ошибка при отправке изображения в чат ${chatId}:`, imageError);
+            }
         }
     }
 
     return successCount > 0;
 }
 
-async function sendStandardMethod(chatId, message) {
+// Альтернативный метод отправки через изображение
+async function sendViaImageMethod(chatId, message) {
     try {
-        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        // Создаем изображение с текстом (альтернативный метод)
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 400;
+        
+        // Заполняем фон
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Добавляем текст
+        ctx.fillStyle = '#333333';
+        ctx.font = '20px Arial';
+        const lines = message.split('\n');
+        lines.forEach((line, index) => {
+            ctx.fillText(line, 20, 30 + (index * 30));
+        });
+        
+        // Конвертируем в data URL
+        const dataUrl = canvas.toDataURL('image/png');
+        
+        // Отправляем через прокси
+        const response = await fetch(CORS_PROXY + encodeURIComponent(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 chat_id: chatId,
-                text: message,
-                parse_mode: 'Markdown'
+                photo: dataUrl,
+                caption: 'Новая заявка на выкуп авто'
             })
         });
+        
         return response.ok;
     } catch (error) {
+        console.error('Ошибка при отправке через изображение:', error);
         return false;
     }
 }
@@ -150,7 +202,7 @@ function initForm() {
             // Валидация
             const error = validateForm(formData);
             if (error) {
-                showNotification(error, true);
+                showNotification(error, 'error');
                 return;
             }
             
@@ -313,6 +365,5 @@ if (phoneInput) {
         
         e.target.value = formattedValue;
     });
-
 }
-
+</script>
