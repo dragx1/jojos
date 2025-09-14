@@ -1243,6 +1243,190 @@ const dollarStyles = `
 `;
 
 document.head.insertAdjacentHTML('beforeend', dollarStyles);
+        //111
+// Стилизуем кнопку и добавляем эффект долларов на заднем плане
+document.addEventListener('DOMContentLoaded', function() {
+    const sellButton = document.getElementById('sellCarBtn');
+    
+    if (sellButton) {
+        // Обновляем стили кнопки
+        Object.assign(sellButton.style, {
+            background: 'linear-gradient(45deg, #000000, #333333)',
+            border: '2px solid #ffd700',
+            boxShadow: '0 0 20px rgba(255, 215, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2)',
+            fontWeight: '700',
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+            position: 'relative',
+            overflow: 'hidden'
+        });
+
+        // Создаем контейнер для долларов (позади кнопки)
+        const dollarContainer = document.createElement('div');
+        Object.assign(dollarContainer.style, {
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '120%',
+            height: '120%',
+            pointerEvents: 'none',
+            zIndex: '-1',
+            overflow: 'hidden'
+        });
+
+        // Добавляем контейнер позади кнопки
+        sellButton.appendChild(dollarContainer);
+
+        // Функция создания долларов на заднем плане
+        function createBackgroundDollar() {
+            const dollar = document.createElement('div');
+            dollar.innerHTML = '💵';
+            Object.assign(dollar.style, {
+                position: 'absolute',
+                fontSize: Math.random() * 20 + 15 + 'px', // Размер от 15px до 35px
+                opacity: '0',
+                filter: 'blur(1px)',
+                zIndex: '-1'
+            });
+
+            // Случайная начальная позиция
+            const startX = Math.random() * 100;
+            const startY = Math.random() * 100;
+            
+            dollar.style.left = startX + '%';
+            dollar.style.top = startY + '%';
+
+            dollarContainer.appendChild(dollar);
+
+            // Анимация появления и исчезновения
+            const animation = dollar.animate([
+                { 
+                    opacity: 0,
+                    transform: 'scale(0.8) rotate(0deg)',
+                    offset: 0
+                },
+                { 
+                    opacity: 0.6,
+                    transform: 'scale(1.1) rotate(180deg)',
+                    offset: 0.3
+                },
+                { 
+                    opacity: 0.8,
+                    transform: 'scale(1.2) rotate(360deg)',
+                    offset: 0.6
+                },
+                { 
+                    opacity: 0,
+                    transform: 'scale(0.9) rotate(540deg)',
+                    offset: 1
+                }
+            ], {
+                duration: 2000 + Math.random() * 1000,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+            });
+
+            animation.onfinish = () => {
+                dollar.remove();
+            };
+        }
+
+        // Запускаем анимацию долларов
+        function startDollarAnimation() {
+            // Создаем 2-3 доллара за раз
+            const dollarCount = 2 + Math.floor(Math.random() * 2);
+            
+            for (let i = 0; i < dollarCount; i++) {
+                setTimeout(() => createBackgroundDollar(), i * 300);
+            }
+        }
+
+        // Запускаем анимацию при пульсации
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    if (sellButton.style.transform.includes('scale(1.05)')) {
+                        startDollarAnimation();
+                    }
+                }
+            });
+        });
+
+        observer.observe(sellButton, { 
+            attributes: true, 
+            attributeFilter: ['style'] 
+        });
+
+        // Также запускаем случайные появления
+        setInterval(startDollarAnimation, 1500);
+
+        // Эффект при наведении
+        sellButton.addEventListener('mouseenter', () => {
+            Object.assign(sellButton.style, {
+                background: 'linear-gradient(45deg, #ffd700, #ffed4e)',
+                color: '#000',
+                boxShadow: '0 0 30px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3)'
+            });
+            
+            // Усиливаем анимацию при наведении
+            for (let i = 0; i < 4; i++) {
+                setTimeout(() => createBackgroundDollar(), i * 200);
+            }
+        });
+
+        sellButton.addEventListener('mouseleave', () => {
+            Object.assign(sellButton.style, {
+                background: 'linear-gradient(45deg, #000000, #333333)',
+                color: '#fff',
+                boxShadow: '0 0 20px rgba(255, 215, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2)'
+            });
+        });
+    }
+});
+
+// Добавляем дополнительные стили для кнопки
+const buttonStyles = `
+<style>
+#sellCarBtn {
+    transition: all 0.3s ease !important;
+    background: linear-gradient(45deg, #000000, #333333) !important;
+    border: 2px solid #ffd700 !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2) !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+#sellCarBtn:hover {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #000 !important;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+}
+
+#sellCarBtn:before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+    z-index: -1;
+    border-radius: 30px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#sellCarBtn:hover:before {
+    opacity: 0.3;
+}
+</style>
+`;
+
+document.head.insertAdjacentHTML('beforeend', buttonStyles);
 </script>
 </body>
 </html>
