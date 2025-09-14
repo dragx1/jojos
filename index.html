@@ -1688,6 +1688,124 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(logoStyles);
     }
 });
+// Уменьшаем размер модального окна
+document.addEventListener('DOMContentLoaded', function() {
+    // Находим модальное окно
+    const modalContent = document.querySelector('.modal-content');
+    
+    if (modalContent) {
+        // Уменьшаем размеры
+        Object.assign(modalContent.style, {
+            maxWidth: '400px',
+            padding: '25px',
+            margin: '20px'
+        });
+        
+        // Уменьшаем заголовок
+        const modalTitle = modalContent.querySelector('h2');
+        if (modalTitle) {
+            modalTitle.style.fontSize = '1.6rem';
+            modalTitle.style.marginBottom = '15px';
+        }
+        
+        // Уменьшаем форму
+        const formGroups = modalContent.querySelectorAll('.form-group');
+        formGroups.forEach(group => {
+            group.style.marginBottom = '15px';
+            
+            // Уменьшаем labels
+            const label = group.querySelector('label');
+            if (label) {
+                label.style.fontSize = '14px';
+                label.style.marginBottom = '6px';
+            }
+            
+            // Уменьшаем inputs
+            const input = group.querySelector('input, select');
+            if (input) {
+                input.style.padding = '10px 12px';
+                input.style.fontSize = '14px';
+            }
+        });
+        
+        // Уменьшаем кнопку
+        const submitBtn = modalContent.querySelector('.submit-btn');
+        if (submitBtn) {
+            submitBtn.style.padding = '12px';
+            submitBtn.style.fontSize = '1rem';
+        }
+        
+        // Уменьшаем иконку закрытия
+        const closeBtn = modalContent.querySelector('.close');
+        if (closeBtn) {
+            closeBtn.style.fontSize = '20px';
+            closeBtn.style.top = '10px';
+            closeBtn.style.right = '10px';
+        }
+        
+        // Добавляем стили для мобильных устройств
+        const modalStyles = document.createElement('style');
+        modalStyles.textContent = `
+            @media (max-width: 480px) {
+                .modal-content {
+                    max-width: 95% !important;
+                    padding: 20px 15px !important;
+                    margin: 10px !important;
+                }
+                
+                .modal-content h2 {
+                    font-size: 1.4rem !important;
+                }
+                
+                .form-group input, .form-group select {
+                    padding: 8px 10px !important;
+                    font-size: 13px !important;
+                }
+                
+                .submit-btn {
+                    padding: 10px !important;
+                    font-size: 14px !important;
+                }
+            }
+            
+            /* Убедимся что модальное окно всегда по центру */
+            .modal {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 20px !important;
+            }
+            
+            /* Скролл внутри модального окна если нужно */
+            .modal-content {
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        `;
+        document.head.appendChild(modalStyles);
+    }
+});
+
+// Также уменьшаем заголовок в модалке
+const modalTitleStyle = document.createElement('style');
+modalTitleStyle.textContent = `
+    .modal h2:after {
+        width: 40px !important;
+        height: 2px !important;
+        bottom: -8px !important;
+    }
+    
+    /* Уменьшаем отступы между полями */
+    .form-group {
+        margin-bottom: 15px !important;
+    }
+    
+    /* Делаем placeholder меньше */
+    input::placeholder, select::placeholder {
+        font-size: 13px !important;
+    }
+`;
+document.head.appendChild(modalTitleStyle);
 </script>
 </body>
 </html>
