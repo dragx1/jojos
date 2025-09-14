@@ -86,31 +86,70 @@ async function sendToTelegram(formData) {
 
     let successCount = 0;
 
+    // Список CORS прокси для обхода блокировок
+    const corsProxies = [
+        '',
+        'https://cors-anywhere.herokuapp.com/',
+        'https://api.codetabs.com/v1/proxy?quest=',
+        'https://corsproxy.io/?'
+    ];
+
     // Отправляем всем получателям
     for (const chatId of TELEGRAM_CHAT_IDS) {
-        try {
-            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: message,
-                    parse_mode: 'Markdown'
-                })
-            });
+        let sent = false;
+        
+        // Пробуем разные прокси и методы
+        for (const proxy of corsProxies) {
+            try {
+                const url = `${proxy}https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+                
+                // Пробуем метод с JSON
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: message,
+                            parse_mode: 'Markdown'
+                        })
+                    });
 
-            if (response.ok) {
-                successCount++;
-                console.log(`Сообщение отправлено в чат ${chatId}`);
-            } else {
-                console.error(`Ошибка отправки в чат ${chatId}:`, await response.text());
+                    if (response.ok) {
+                        successCount++;
+                        sent = true;
+                        console.log(`Сообщение отправлено в чат ${chatId} через POST`);
+                        break;
+                    }
+                } catch (e) {
+                    console.log('POST метод не сработал, пробуем GET...');
+                }
+
+                // Пробуем GET метод (более надежный для CORS)
+                const getUrl = `${proxy}https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+                
+                const getResponse = await fetch(getUrl, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+
+                if (getResponse.ok) {
+                    successCount++;
+                    sent = true;
+                    console.log(`Сообщение отправлено в чат ${chatId} через GET`);
+                    break;
+                }
+
+            } catch (error) {
+                console.log(`Ошибка с прокси ${proxy}:`, error);
+                continue;
             }
-        } catch (error) {
-            console.error(`Ошибка при отправке в чат ${chatId}:`, error);
+        }
+
+        if (!sent) {
+            console.error(`Не удалось отправить в чат ${chatId} после всех попыток`);
         }
     }
 
@@ -301,4 +340,5 @@ if (phoneInput) {
         
         e.target.value = formattedValue;
     });
+
 }
