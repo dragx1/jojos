@@ -206,6 +206,7 @@ function initForm() {
             brand: document.getElementById('brand').value,
             model: document.getElementById('model').value,
             year: document.getElementById('year').value,
+			vin: document.getElementById('vin').value,
             price: document.getElementById('price').value,
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value
@@ -258,6 +259,7 @@ function initForm() {
 Марка: ${formData.brand}
 Модель: ${formData.model}
 Год выпуска: ${formData.year}
+${formData.vin ? `VIN номер: ${formData.vin}` : 'VIN номер: не указан'}
 Желаемая цена: ${formData.price} руб.
 Имя клиента: ${formData.name}
 Телефон: ${formData.phone}
